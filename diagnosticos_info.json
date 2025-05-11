@@ -1,0 +1,34 @@
+{
+    "Candidiasis": {
+        "clasificacion": "Benigna",
+        "descripcion": "Infección micótica común causada por especies de Candida, suele presentarse como lesiones blancas, dolorosas o con sensación de ardor.",
+        "factores": [
+            "Inmunosupresión",
+            "Uso de antibióticos",
+            "Prótesis mal ajustadas",
+            "Diabetes"
+        ],
+        "fuente": "Regezi & Sciubba – Patología Bucal"
+    },
+    "Fibroma": {
+        "clasificacion": "Benigna",
+        "descripcion": "Lesión hiperplásica de tejido conectivo, comúnmente causada por trauma o irritación crónica. Aparece como una masa firme y asintomática.",
+        "factores": [
+            "Irritación mecánica",
+            "Trauma crónico",
+            "Hábitos parafuncionales"
+        ],
+        "fuente": "Atlas de Patología del Complejo Bucal – J.C. Santana Garay"
+    },
+    "Leucoplasia": {
+        "clasificacion": "Sospechosa",
+        "descripcion": "Placa blanca que no puede ser raspada ni clasificada como otra patología. Puede tener potencial maligno.",
+        "factores": [
+            "Tabaquismo",
+            "Alcoholismo",
+            "Trauma crónico",
+            "Virus VPH"
+        ],
+        "fuente": "Patología oral y general – DeLong & Burkhart"
+    }
+}
