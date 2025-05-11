@@ -93,7 +93,7 @@ if submit:
     diagnostico_visual = "No realizado"
     if imagen_cargada:
         imagen_pil = image.load_img(imagen_cargada)
-        st.image(imagen_pil, caption="Imagen analizada", use_column_width=True)
+        st.image(imagen_pil, caption="Imagen analizada", use_container_width=True)
         entrada = procesar_imagen(imagen_pil)
         pred = model.predict(entrada)[0]
         diagnostico_visual = class_names[np.argmax(pred)]
