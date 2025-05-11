@@ -90,7 +90,7 @@ with st.form("form_diagnostico"):
     submit = st.form_submit_button("Generar diagnóstico integral")
 
 if submit:
-    diagnostico_visual = "No realizado"
+    diagnostico_visual = "Diagnóstico no identificable"
     if imagen_cargada:
         imagen_pil = image.load_img(imagen_cargada)
         st.image(imagen_pil, caption="Imagen analizada", use_container_width=True)
