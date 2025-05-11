@@ -90,13 +90,13 @@ with st.form("form_diagnostico"):
     submit = st.form_submit_button("Generar diagnóstico integral")
 
 if submit:
-    diagnostico_visual = "Diagnóstico no identificable"
+    diagnostico_visual = "Diagnóstico no disponible"
     if imagen_cargada:
         imagen_pil = image.load_img(imagen_cargada)
         st.image(imagen_pil, caption="Imagen analizada", use_container_width=True)
         entrada = procesar_imagen(imagen_pil)
         pred = model.predict(entrada)[0]
-        diagnostico_visual = class_names[np.argmax(pred)]
+        diagnostico_visual = "Diagnóstico no disponible"
         st.success(f"🧠 Diagnóstico visual sugerido: {diagnostico_visual}")
 
     info = info_diagnostico.get(diagnostico_visual, {})
