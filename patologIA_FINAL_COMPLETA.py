@@ -41,13 +41,28 @@ def mostrar_formulario():
         respuestas[pregunta] = st.selectbox(pregunta, opciones)
     return respuestas
 
-# Generar PDF
 def generar_pdf(diagnostico, info, respuestas):
     nombre_archivo = f"reporte_patologIA_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "REPORTE DE DIAGNÓSTICO – patologIA", ln=True)
+    pdf.cell(0, 10, "REPORTE DE DIAGNOSTICO – patologIA".encode('utf-8').decode('latin1'), ln=True)
+
+    pdf.set_font("Arial", size=12)
+    pdf.cell(0, 10, f"Diagnostico visual sugerido: {diagnostico}".encode('utf-8').decode('latin1'), ln=True)
+    pdf.multi_cell(0, 10, f"Clasificacion: {info.get('clasificacion', '-')}".encode('utf-8').decode('latin1'))
+    pdf.multi_cell(0, 10, f"Descripcion: {info.get('descripcion', '-')}".encode('utf-8').decode('latin1'))
+    pdf.multi_cell(0, 10, f"Factores asociados: {', '.join(info.get('factores', []))}".encode('utf-8').decode('latin1'))
+    pdf.cell(0, 10, f"Fuente: {info.get('fuente', '-')}".encode('utf-8').decode('latin1'), ln=True)
+
+    pdf.cell(0, 10, "Respuestas clinicas:".encode('utf-8').decode('latin1'), ln=True)
+    for clave, valor in respuestas.items():
+        texto = f"{clave}: {valor}".encode('utf-8').decode('latin1')
+        pdf.cell(0, 8, texto, ln=True)
+
+    pdf.output(nombre_archivo)
+    return nombre_archivo
+
 
     # Diagnóstico visual
     pdf.set_font("Arial", size=12)
