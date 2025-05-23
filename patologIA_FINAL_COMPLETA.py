@@ -1,10 +1,56 @@
 
 import streamlit as st
 import tensorflow as tf
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 import os
 from fpdf import FPDF
+from datetime import datetime
+
+def limpiar_texto(texto):
+    reemplazos = {
+        "–": "-", "“": '"', "”": '"', "’": "'", "‘": "'", "…": "...",
+        "á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+        "Á": "A", "É": "E", "Í": "I", "Ó": "O", "Ú": "U",
+        "ñ": "n", "Ñ": "N"
+    }
+    for original, reemplazo in reemplazos.items():
+        texto = texto.replace(original, reemplazo)
+    return texto
+
+def generar_pdf(diagnostico_visual, info, respuestas):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.cell(200, 10, txt="REPORTE CLÍNICO – patologIA", ln=True)
+    pdf.cell(200, 10, txt=f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}", ln=True)
+    pdf.ln(10)
+
+    pdf.set_font("Arial", size=11)
+    pdf.set_font("Arial", size=11)
+    pdf.cell(200, 10, txt="Respuestas del caso:", ln=True)
+    for clave, valor in respuestas.items():
+        pdf.multi_cell(0, 10, txt=limpiar_texto(f"- {clave}: {valor}"))
+
+    pdf.ln(5)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(200, 10, txt="Diagnóstico visual sugerido:", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, txt=limpiar_texto(f"{diagnostico_visual}"))
+
+    if info:
+        pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(200, 10, txt="Información clínica:", ln=True)
+        pdf.set_font("Arial", size=11)
+        for clave, valor in info.items():
+            pdf.multi_cell(0, 8, txt=limpiar_texto(f"- {clave}: {valor}"))
+
+    nombre_archivo = f"reporte_patologIA_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.pdf"
+    pdf.output(nombre_archivo, 'F')  # <-- evitar UnicodeEncodeError
+    return nombre_archivo
+
 from datetime import datetime
 import json
 
@@ -41,28 +87,52 @@ def mostrar_formulario():
         respuestas[pregunta] = st.selectbox(pregunta, opciones)
     return respuestas
 
-def generar_pdf(diagnostico, info, respuestas):
-    nombre_archivo = f"reporte_patologIA_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+# Generar PDF
+from fpdf import FPDF
+from datetime import datetime
+
+def limpiar_texto(texto):
+    reemplazos = {
+        "–": "-", "“": '"', "”": '"', "’": "'", "‘": "'", "…": "...",
+        "á": "a", "é": "e", "í": "i", "ó": "o", "ú": "u",
+        "Á": "A", "É": "E", "Í": "I", "Ó": "O", "Ú": "U",
+        "ñ": "n", "Ñ": "N"
+    }
+    for original, reemplazo in reemplazos.items():
+        texto = texto.replace(original, reemplazo)
+    return texto
+
+def generar_pdf(diagnostico_visual, info, respuestas):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
-    pdf.cell(0, 10, "REPORTE DE DIAGNOSTICO – patologIA".encode('utf-8').decode('latin1'), ln=True)
-
     pdf.set_font("Arial", size=12)
-    pdf.cell(0, 10, f"Diagnostico visual sugerido: {diagnostico}".encode('utf-8').decode('latin1'), ln=True)
-    pdf.multi_cell(0, 10, f"Clasificacion: {info.get('clasificacion', '-')}".encode('utf-8').decode('latin1'))
-    pdf.multi_cell(0, 10, f"Descripcion: {info.get('descripcion', '-')}".encode('utf-8').decode('latin1'))
-    pdf.multi_cell(0, 10, f"Factores asociados: {', '.join(info.get('factores', []))}".encode('utf-8').decode('latin1'))
-    pdf.cell(0, 10, f"Fuente: {info.get('fuente', '-')}".encode('utf-8').decode('latin1'), ln=True)
 
-    pdf.cell(0, 10, "Respuestas clinicas:".encode('utf-8').decode('latin1'), ln=True)
+    pdf.cell(200, 10, txt="REPORTE CLINICO - patologIA", ln=True)
+    pdf.cell(200, 10, txt=f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M')}", ln=True)
+    pdf.ln(10)
+
+    pdf.set_font("Arial", size=11)
+    pdf.cell(200, 10, txt="Respuestas del caso:", ln=True)
     for clave, valor in respuestas.items():
-        texto = f"{clave}: {valor}".encode('utf-8').decode('latin1')
-        pdf.cell(0, 8, texto, ln=True)
+        pdf.multi_cell(0, 10, txt=limpiar_texto(f"- {clave}: {valor}"))
 
-    pdf.output(nombre_archivo)
+    pdf.ln(5)
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(200, 10, txt="Diagnóstico visual sugerido:", ln=True)
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, txt=limpiar_texto(f"{diagnostico_visual}"))
+
+    if info:
+        pdf.ln(5)
+        pdf.set_font("Arial", "B", 12)
+        pdf.cell(200, 10, txt="Información clínica:", ln=True)
+        pdf.set_font("Arial", size=11)
+        for clave, valor in info.items():
+            pdf.multi_cell(0, 8, txt=limpiar_texto(f"- {clave}: {valor}"))
+
+    nombre_archivo = f"reporte_patologIA_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.pdf"
+    pdf.output(nombre_archivo, 'F')
     return nombre_archivo
-
 
     # Diagnóstico visual
     pdf.set_font("Arial", size=12)
@@ -77,12 +147,13 @@ def generar_pdf(diagnostico, info, respuestas):
     for clave, valor in respuestas.items():
         pdf.cell(0, 8, f"{clave}: {valor}", ln=True)
 
-    pdf.output(nombre_archivo)
-    return nombre_archivo
+    pdf.output(patologIA_FINAL_COMPLETA.py, 'F')
+
+    return patologIA_FINAL_COMPLETA.py
 
 # Streamlit UI
 st.set_page_config(page_title="patologIA Clínica Integral", layout="centered")
-st.title("🦷 patologIA: Diagnóstico Visual y Clínico")
+st.title("patologIA: Diagnóstico Visual y Clínico")
 
 with st.form("form_diagnostico"):
     imagen_cargada = st.file_uploader("📷 Sube imagen de la lesión (opcional)", type=["jpg", "jpeg", "png"])
@@ -90,24 +161,24 @@ with st.form("form_diagnostico"):
     submit = st.form_submit_button("Generar diagnóstico integral")
 
 if submit:
-    diagnostico_visual = "Diagnóstico no disponible"
+    diagnostico_visual = "No realizado"
     if imagen_cargada:
         imagen_pil = image.load_img(imagen_cargada)
-        st.image(imagen_pil, caption="Imagen analizada", use_container_width=True)
+        st.image(imagen_pil, caption="Imagen analizada", use_column_width=True)
         entrada = procesar_imagen(imagen_pil)
         pred = model.predict(entrada)[0]
-        diagnostico_visual = "Diagnóstico no disponible"
-        st.success(f"🧠 Diagnóstico visual sugerido: {diagnostico_visual}")
+        diagnostico_visual = class_names[np.argmax(pred)]
+        st.success(f"Diagnóstico visual sugerido: {diagnostico_visual}")
 
     info = info_diagnostico.get(diagnostico_visual, {})
     if info:
-        st.write(f"🔬 Clasificación: **{info.get('clasificacion')}**")
-        st.write(f"📝 {info.get('descripcion')}")
-        st.write(f"📌 Factores asociados: {', '.join(info.get('factores', []))}")
-        st.write(f"📚 Fuente: {info.get('fuente')}")
+        st.write(f"Clasificación: **{info.get('clasificacion')}**")
+        st.write(f"{info.get('descripcion')}")
+        st.write(f"Factores asociados: {', '.join(info.get('factores', []))}")
+        st.write(f"Fuente: {info.get('fuente')}")
     else:
         st.warning("No hay detalles disponibles para este diagnóstico visual.")
 
     archivo_pdf = generar_pdf(diagnostico_visual, info, respuestas)
     with open(archivo_pdf, "rb") as f:
-        st.download_button("📄 Descargar reporte en PDF", f, file_name=archivo_pdf)
+        st.download_button("Descargar reporte en PDF", f, file_name=archivo_pdf)
